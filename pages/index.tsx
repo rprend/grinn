@@ -27,7 +27,6 @@ export default function Home() {
         prompt
       })
     }).then(res => res.json()).then(data => {
-      console.log(data)
       setJoke(data.choices[0].text)
       setFetching(false)
     })
