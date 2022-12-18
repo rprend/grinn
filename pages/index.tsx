@@ -45,25 +45,27 @@ export default function Home() {
           <h1 className="pt-16 text-4xl font-bold">Grinn</h1>
           <h3 className="text-lg font-medium italic pb-6">the ai comic</h3>
           <div><textarea onChange={updatePrompt} className="p-5 w-full h-96 border-2 border-blue" /></div>
-          {!session &&
-          <>
-          <Alert color="info" className='mb-5'>You must be authorized to submit</Alert>
-          <div className="flex flex-row justify-between">
-            <button onClick={() => signIn()} className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign In</button>
-            <button onClick={handleSubmit} data-tooltip-target="tooltip-default" className='text-gray-900 disabled:opacity-50 bg-sky-700 disabled:hover:bg-gradient-to-r bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2'
-            disabled>submit</button>
+          <div className="mt-5">
+            {!session &&
+            <>
+            <Alert color="info" className='mb-5'>You must be authorized to submit</Alert>
+            <div className="flex flex-row justify-between">
+              <button onClick={() => signIn()} className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign In</button>
+              <button onClick={handleSubmit} data-tooltip-target="tooltip-default" className='text-gray-900 disabled:opacity-50 bg-sky-700 disabled:hover:bg-gradient-to-r bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2'
+              disabled>submit</button>
+            </div>
+            </>
+            }
+            {session &&
+            <>
+            <div className="flex flex-row justify-between">
+              <button onClick={() => signOut()} className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign Out</button>
+              <button onClick={handleSubmit} data-tooltip-target="tooltip-default" className='text-gray-900 disabled:opacity-50 bg-sky-700 disabled:hover:bg-gradient-to-r bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2'
+              disabled={fetching}>submit</button>
+            </div>
+            </>
+            }
           </div>
-          </>
-          }
-          {session &&
-          <>
-          <div className="flex flex-row justify-between">
-            <button onClick={() => signOut()} className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign Out</button>
-            <button onClick={handleSubmit} data-tooltip-target="tooltip-default" className='text-gray-900 disabled:opacity-50 bg-sky-700 disabled:hover:bg-gradient-to-r bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2'
-            disabled={fetching}>submit</button>
-          </div>
-          </>
-          }
           {joke && <div>{joke}</div>}
         </div>
       </main>
