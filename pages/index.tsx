@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { ChangeEvent, useState } from 'react'
 import { useSession, signIn, signOut } from "next-auth/react"
 import { Alert } from 'flowbite-react'
+import { HiInformationCircle } from "react-icons/hi";
 
 export default function Home() {
   const [joke, setJoke] = useState<string | null>(null)
@@ -48,7 +49,7 @@ export default function Home() {
           <div className="mt-5">
             {!session &&
             <>
-            <Alert color="info" className='mb-5'>You must be authorized to submit (no stealing my gpt credits)</Alert>
+            <Alert color="info" icon={HiInformationCircle} className='mb-5'>You must be authorized to submit (no stealing my gpt credits)</Alert>
             <div className="flex flex-row justify-between">
               <button onClick={() => signIn()} className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign In</button>
               <button onClick={handleSubmit} data-tooltip-target="tooltip-default" className='text-gray-900 disabled:opacity-50 bg-sky-700 disabled:hover:bg-gradient-to-r bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2'
