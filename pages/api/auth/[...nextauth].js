@@ -10,6 +10,8 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
+      console.log("Logging user in")
+      console.log(user)
       const allowed_emails = process.env.ALLOWED_EMAILS.split(",")
       if (!allowed_emails.includes(user.email)) {
         return false
