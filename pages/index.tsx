@@ -3,6 +3,7 @@ import { ChangeEvent, useState } from 'react'
 import { useSession, signIn, signOut } from "next-auth/react"
 import { Alert } from 'flowbite-react'
 import { HiInformationCircle } from "react-icons/hi";
+import Image from 'next/image'
 
 export default function Home() {
   const [joke, setJoke] = useState<string | null>(null)
