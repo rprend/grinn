@@ -7,6 +7,7 @@ import Image from 'next/image'
 
 export default function Home() {
   const [joke, setJoke] = useState<string | null>(null)
+  const [quota, setQuota] = useState<number | null>(null)
   const [fetching, setFetching] = useState(false)
   let prompt = ''
 
@@ -14,6 +15,40 @@ export default function Home() {
 
   function updatePrompt(e: ChangeEvent) {
     prompt = (e.target as HTMLTextAreaElement).value
+  }
+
+  function getQuota() {
+    if (!session || !session.user) return
+
+    fetch('api/getUsage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: session.user.email
+      })
+    }).then(res => res.json()).then(data => {
+      const quota_limit: number = process.env.QOUTA_LIMIT ? parseInt(process.env.QOUTA_LIMIT) : 10000
+      setQuota(data.body.total_tokens / quota_limit)
+    })
+  }
+
+  function incrementQuota(tokens: number) {
+    if (!session || !session.user) return
+
+    fetch('api/incrementRedis', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: session.user.email,
+        tokens
+      })
+    }).then(res => res.json()).then(() => {
+      getQuota()
+    })
   }
 
   function handleSubmit() {
@@ -30,10 +65,15 @@ export default function Home() {
       })
     }).then(res => res.json()).then(data => {
       setJoke(data.choices[0].text)
+      incrementQuota(data.usage.total_tokens)
       setFetching(false)
     })
   }
 
+  // Get quota on load
+  if (session) {
+    getQuota()
+  }
   return (
     <>
       <Head>
@@ -50,7 +90,7 @@ export default function Home() {
           <div className="mt-5">
             {!session &&
             <>
-            <Alert color="info" icon={HiInformationCircle} className='mb-5'>You must be authorized to submit (no stealing my gpt credits)</Alert>
+            <Alert color="warning" icon={HiInformationCircle} className='mb-5'>You must be authorized to submit (no stealing my gpt credits)</Alert>
             <div className="flex flex-row justify-between">
               <button onClick={() => signIn()} className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign In</button>
               <button onClick={handleSubmit} data-tooltip-target="tooltip-default" className='text-gray-900 disabled:opacity-50 bg-sky-700 disabled:hover:bg-gradient-to-r bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2'
@@ -60,6 +100,8 @@ export default function Home() {
             }
             {session &&
             <>
+            {!quota && <Alert color="gray" icon={HiInformationCircle} className='mb-5'>Usage this month: loading...</Alert>}
+            {quota && <Alert color="gray" icon={HiInformationCircle} className='mb-5'>Usage this month: {quota * 100}%</Alert>}
             <div className="flex flex-row justify-between">
               <button onClick={() => signOut()} className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign Out</button>
               <button onClick={handleSubmit} data-tooltip-target="tooltip-default" className='text-gray-900 disabled:opacity-50 bg-sky-700 disabled:hover:bg-gradient-to-r bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2'

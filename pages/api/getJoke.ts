@@ -13,5 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     prompt,
   });
 
+  console.log(joke)
+
   res.status(200).json( joke.data );
 }

@@ -10,10 +10,11 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      const allowed_emails = process.env.ALLOWED_EMAILS.split(",")
-      if (!allowed_emails.includes(user.email)) {
-        return false
-      }
+      // Comment out the authorized email whitelist in lieu of a quota based system.
+      // const allowed_emails = process.env.ALLOWED_EMAILS.split(",")
+      // if (!allowed_emails.includes(user.email)) {
+      //   return false
+      // }
       return true
     },
   }
