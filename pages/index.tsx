@@ -43,6 +43,10 @@ export default function Home() {
     return quota != null && (quota >= 1)
   }
 
+  function quotaLoaded(): boolean {
+    return quota != null && quota !== undefined
+  }
+
   // get quota usage on load
   useEffect(() => {
     if (session?.user) {
@@ -84,9 +88,9 @@ export default function Home() {
             }
             {session &&
               <>
-              {!quota && <Alert color="gray" icon={HiInformationCircle} className='mb-5'>Usage this month: loading...</Alert>}
-              {quota && !maxedOut() && <Alert color="gray" icon={HiInformationCircle} className='mb-5'>Usage this month: {quota * 100}%</Alert>}
-              {quota && maxedOut() && <Alert color="failure" icon={HiInformationCircle} className='mb-5'>You have reached your monthly limit of {process.env.QOUTA_LIMIT} tokens</Alert>}
+              {!quotaLoaded() && <Alert color="gray" icon={HiInformationCircle} className='mb-5'>Usage this month: loading...</Alert>}
+              {quotaLoaded() && !maxedOut() && <Alert color="gray" icon={HiInformationCircle} className='mb-5'>Usage this month: {quota * 100}%</Alert>}
+              {quotaLoaded() && maxedOut() && <Alert color="failure" icon={HiInformationCircle} className='mb-5'>You have reached your monthly limit of {process.env.QOUTA_LIMIT} tokens</Alert>}
               <div className="flex flex-row justify-between">
                 <button onClick={() => signOut()} className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign Out</button>
                 <button onClick={handleSubmit} data-tooltip-target="tooltip-default" className='text-gray-900 disabled:opacity-50 bg-sky-700 disabled:hover:bg-gradient-to-r bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2'
