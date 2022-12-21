@@ -4,20 +4,6 @@ import { unstable_getServerSession } from "next-auth/next"
 import { authOptions } from "../auth/[...nextauth]"
 import { Redis } from '@upstash/redis'
 
-export async function incrementRedis(email: string, tokens: number) {
-  const redis = Redis.fromEnv();
-
-  let current_usage: number | null = await redis.get(email)
-  if (current_usage == null) {
-    current_usage = 0
-  }
-
-  const new_usage = current_usage + tokens
-  await redis.set(email, new_usage);
-
-  return new_usage
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await unstable_getServerSession(req, res, authOptions);
 
@@ -35,6 +21,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(400).json({ error: "Bad Request" });
     return;
   }
+  const redis = Redis.fromEnv();
+
+  const email = session.user.email
+  let current_usage: number | null = await redis.get(email)
+  if (current_usage == null) {
+    current_usage = 0
+  }
+
+  const usage_limit: number = parseInt(process.env.OPENAI_TOKEN_LIMIT ?? '0')
+  if (current_usage > usage_limit) {
+    res.status(402).json({ error: "Payment Required" });
+    return;
+  }
 
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -48,9 +47,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   })
 
   const tokens = joke.data.usage?.total_tokens ?? 0
-  const email = session.user.email
 
-  const new_usage = await incrementRedis(email, tokens)
+  const new_usage = current_usage + tokens
+  await redis.set(email, new_usage);
 
   res.status(200).json( { data: joke.data, usage: new_usage } );
 }
