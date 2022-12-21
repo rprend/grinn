@@ -20,14 +20,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     model: "text-davinci-002",
     prompt,
     max_tokens: 50,
-  });
+  })
+
+  const tokens = joke.data.usage?.total_tokens ?? 0
 
   await fetch('/api/incrementRedis', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ tokens: joke.data.usage.tokens })
+    body: JSON.stringify({ tokens })
   })
 
   res.status(200).json( joke.data );
