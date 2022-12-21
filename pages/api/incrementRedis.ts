@@ -12,6 +12,16 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
     return;
   }
 
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: "Method Not Allowed" });
+    return;
+  }
+
+  if (typeof req.body.tokens !== 'number' || req.body.tokens < 0) {
+    res.status(400).json({ error: "Bad Request" });
+    return;
+  }
+
   const redis = Redis.fromEnv();
   const email = session.user?.email ?? 'null'
   const tokens = req.body.tokens

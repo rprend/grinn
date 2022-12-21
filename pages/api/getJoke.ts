@@ -19,7 +19,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const joke = await openai.createCompletion({
     model: "text-davinci-002",
     prompt,
+    max_tokens: 50,
   });
+
+  await fetch('/api/incrementRedis', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ tokens: joke.data.usage.tokens })
+  })
 
   res.status(200).json( joke.data );
 }
